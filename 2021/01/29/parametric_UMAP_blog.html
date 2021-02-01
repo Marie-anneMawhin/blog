@@ -77,7 +77,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      4 min read
+      3 min read
     
 </span></p>
 
@@ -122,6 +122,13 @@ window.onload = wrap_img;
 <p>Flow cytometry is a powerful technique for phenotypic analysis of cells and cell populations. One main challenge in flow cytometry analysis is to visualise the resulting high-dimensional data to better understand single-cell data. This is where <strong>dimensionality reduction</strong> techniques come at play, in particular with the advent of mass and spectral cytometry. Most biological are <strong>non-linear</strong> so using algorithm based on principal component while maintaining global distribution but lose local ones. The most used algorithm is currently tSNE, which stands for t-Stochastic Neighbor Embedding. However, <strong>t-SNE</strong> is computational expensive and tented to loose global structure. That’s where <strong>UMAP</strong> veni vedi vici!</p>
 <h3 id="A-little-bit-about-t-SNE"><strong>A little bit about t-SNE</strong><a class="anchor-link" href="#A-little-bit-about-t-SNE"> </a></h3><p>Let’s start by explaining briefly how t-SNE works in made-for-biologist terms:<br />
 Developped by <a href="https://lvdmaaten.github.io/tsne/">L.J.P. van der Maaten</a>,  the algorithm aims is to minimise the Kullback-Leibler (KL) divergence, a measure of how one probability distribution diverges from a second, between the joint probabilities of the low-dimensional embedding and the high-dimensional data.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's plot KL divergence to better understand it using <code>scipy.stats norm</code> and <code>numpy</code> for distribution and <code>seaborn</code> on top of <code>matplotlib.pyplot</code> for plotting</p>
 
 </div>
 </div>
@@ -258,241 +265,6 @@ Typical value range from 5-50, but the larger the dataset the larger the perplex
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;../data/merged_sham_nx_leuko.csv&#39;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Remove-unused-columns-and-select-features">Remove unused columns and select features<a class="anchor-link" href="#Remove-unused-columns-and-select-features"> </a></h3><p>Only the leukocytes populations was selected for analysis so L/D staining was not included. Width was choosen for cell morphology as it is independent of the PMT.</p>
-
-</div>
-</div>
-</div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">leuko</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-<span class="n">leuko</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;Unnamed: 0&#39;</span><span class="p">,</span><span class="s1">&#39;Singlets 1&#39;</span><span class="p">,</span> <span class="s1">&#39;Singlets 2&#39;</span><span class="p">,</span> <span class="s1">&#39;live&#39;</span><span class="p">,</span> <span class="s1">&#39;cells&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;R1_&#39;</span><span class="p">,</span> <span class="s1">&#39;R2_&#39;</span><span class="p">,</span> <span class="s1">&#39;R3&#39;</span><span class="p">,</span> <span class="s1">&#39;R4&#39;</span><span class="p">,</span> <span class="s1">&#39;PMNs&#39;</span><span class="p">,</span> <span class="s1">&#39;LIN+&#39;</span><span class="p">,</span> <span class="s1">&#39;CCR2+_&#39;</span><span class="p">]:</span>
-    <span class="n">leuko</span><span class="p">[[</span><span class="n">col</span><span class="p">]]</span> <span class="o">=</span> <span class="n">leuko</span><span class="p">[[</span><span class="n">col</span><span class="p">]]</span><span class="o">.</span><span class="n">replace</span><span class="p">({</span><span class="kc">True</span><span class="p">:</span><span class="n">col</span><span class="p">,</span> <span class="kc">False</span><span class="p">:</span><span class="s1">&#39;&#39;</span><span class="p">})</span>
-    <span class="n">leuko</span><span class="p">[</span><span class="s1">&#39;subtype&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">leuko</span><span class="p">[[</span><span class="n">col</span><span class="p">]]</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">leuko</span><span class="p">[</span><span class="s1">&#39;subtype&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">leuko</span><span class="p">[[</span><span class="s1">&#39;R1_&#39;</span><span class="p">,</span> <span class="s1">&#39;R2_&#39;</span><span class="p">,</span> <span class="s1">&#39;R3&#39;</span><span class="p">,</span> <span class="s1">&#39;R4&#39;</span><span class="p">,</span> <span class="s1">&#39;PMNs&#39;</span><span class="p">,</span> <span class="s1">&#39;LIN+&#39;</span><span class="p">,</span> <span class="s1">&#39;CCR2+_&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">leuko</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">leuko</span><span class="p">[</span><span class="s1">&#39;subtype&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;subtype&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;leukocytes&#39;</span>
-<span class="n">leuko</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">leuko</span><span class="p">[</span><span class="s1">&#39;subtype&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;R2_R4&#39;</span><span class="p">,</span> <span class="s1">&#39;subtype&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;R2&#39;</span>
-<span class="n">leuko</span><span class="o">.</span><span class="n">subtype</span> <span class="o">=</span> <span class="n">leuko</span><span class="o">.</span><span class="n">subtype</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">leuko</span><span class="p">[</span><span class="s1">&#39;subtype&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">leuko</span><span class="o">.</span><span class="n">subtype</span><span class="p">,</span>
-                                  <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                  <span class="n">categories</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;R1&#39;</span><span class="p">,</span> <span class="s1">&#39;R2&#39;</span><span class="p">,</span> <span class="s1">&#39;R3&#39;</span><span class="p">,</span> <span class="s1">&#39;R4&#39;</span><span class="p">,</span> <span class="s1">&#39;CCR2+&#39;</span><span class="p">,</span> 
-                                              <span class="s1">&#39;PMNs&#39;</span><span class="p">,</span> <span class="s1">&#39;LIN+&#39;</span><span class="p">,</span> <span class="s1">&#39;leukocytes&#39;</span><span class="p">]</span>
-
-<span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">features</span> <span class="o">=</span> <span class="n">leuko</span><span class="p">[[</span><span class="s1">&#39;FSC-W_&#39;</span><span class="p">,</span> <span class="s1">&#39;SSC-W_&#39;</span><span class="p">,</span> <span class="s1">&#39;BV421-A_Lin&#39;</span><span class="p">,</span>
-                                      <span class="s1">&#39;BV510-A_Ly6C&#39;</span><span class="p">,</span> <span class="s1">&#39;FITC-A_F4/80&#39;</span><span class="p">,</span> <span class="s1">&#39;BV605-A_Ly6G&#39;</span><span class="p">,</span> <span class="s1">&#39;PE-Cy7-A_CD11b&#39;</span><span class="p">,</span>
-                                      <span class="s1">&#39;BV 785-A_CD45&#39;</span><span class="p">,</span> <span class="s1">&#39;APC-A_MHCII&#39;</span><span class="p">,</span> 
-                                      <span class="s1">&#39;PE-A_CCR2&#39;</span><span class="p">]]</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Custom-plotting">Custom plotting<a class="anchor-link" href="#Custom-plotting"> </a></h3>
-</div>
-</div>
-</div>
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">umap.parametric_umap</span> <span class="kn">import</span> <span class="n">load_ParametricUMAP</span>
-<span class="n">embedder_1</span> <span class="o">=</span> <span class="n">load_ParametricUMAP</span><span class="p">(</span><span class="s1">&#39;models/embedder_1//&#39;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Pickle of ParametricUMAP model loaded from models/embedder_1//model.pkl
-WARNING:tensorflow:No training configuration found in save file, so the model was *not* compiled. Compile it manually.
-Keras encoder model loaded from models/embedder_1//encoder
-Keras full model loaded from models/embedder_1//parametric_model
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">graph</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">embedder_1</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;UMAP 1&#39;</span><span class="p">,</span> <span class="s1">&#39;UMAP 2&#39;</span><span class="p">]),</span> <span class="n">leuko</span><span class="p">[[</span><span class="s1">&#39;sample&#39;</span><span class="p">,</span> <span class="s1">&#39;subtype&#39;</span><span class="p">]]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;subtype&#39;</span><span class="p">)</span>
-<span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">replace</span><span class="p">({</span><span class="s1">&#39;R1&#39;</span><span class="p">:</span><span class="s1">&#39;F4/80⁺MHCIIʰᶦ&#39;</span><span class="p">,</span> <span class="s1">&#39;R2&#39;</span><span class="p">:</span><span class="s1">&#39;F4/80⁺MHCIIˡᵒ&#39;</span><span class="p">,</span><span class="s1">&#39;R3&#39;</span><span class="p">:</span><span class="s1">&#39;Ly6C⁺MHCIIʰᶦ&#39;</span><span class="p">,</span><span class="s1">&#39;R4&#39;</span><span class="p">:</span><span class="s1">&#39;Ly6C⁺&#39;</span><span class="p">,</span>
-                      <span class="s1">&#39;CCR2+&#39;</span><span class="p">:</span><span class="s1">&#39;F4/80⁺MHCIIʰᶦCCR2⁺&#39;</span><span class="p">,</span><span class="s1">&#39;PMNs&#39;</span><span class="p">:</span><span class="s1">&#39;neutrophils&#39;</span><span class="p">,</span><span class="s1">&#39;LIN+&#39;</span><span class="p">:</span><span class="s1">&#39;lymphocytes&#39;</span><span class="p">})</span>
-<span class="n">graph</span><span class="o">.</span><span class="n">subtype</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>array([&#39;F4/80⁺MHCIIʰᶦ&#39;, &#39;F4/80⁺MHCIIˡᵒ&#39;, &#39;Ly6C⁺MHCIIʰᶦ&#39;, &#39;Ly6C⁺&#39;,
-       &#39;F4/80⁺MHCIIʰᶦCCR2⁺&#39;, &#39;neutrophils&#39;, &#39;lymphocytes&#39;, &#39;leukocytes&#39;],
-      dtype=object)</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">reset_orig</span><span class="p">()</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">font_scale</span><span class="o">=</span><span class="mf">1.3</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;ticks&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="s1">&#39;talk&#39;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="s1">&#39;Arial&#39;</span><span class="p">,</span> 
         <span class="n">rc</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;axes.linewidth&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
            <span class="s2">&quot;xtick.major.size&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;ytick.major.size&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
@@ -553,23 +325,6 @@ Keras full model loaded from models/embedder_1//parametric_model
 
 </div>
 
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;../images/final_plot.tiff&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
-</pre></div>
-
-    </div>
 </div>
 </div>
 
