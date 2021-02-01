@@ -39,8 +39,8 @@
 
   
       ,"page1": {
-          "title": "About Me",
-          "content": "This website is powered by fastpages 1. . a blogging platform that natively supports Jupyter notebooks in addition to other formats. &#8617; . |",
+          "title": "A little about me",
+          "content": "I’m a biologist and neophyte data scientist. I have been exploring the world of machine learning and deep learning and I want to share my understanding of these models with you. I hope I can provide you with an accurate and simple insight into AI. . You can check out my CV and find out more about what I’m up to right now here. . This website is powered by fastpages 1. . a blogging platform that natively supports Jupyter notebooks in addition to other formats. &#8617; . |",
           "url": "https://marie-annemawhin.github.io/blog/about/",
           "relUrl": "/about/",
           "date": ""
