@@ -119,9 +119,9 @@ window.onload = wrap_img;
         
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Flow cytometry is a powerful technique for phenotypic analysis of cells and cell populations. One main challenge in flow cytometry analysis is to visualise the resulting high-dimensional data to better understand single-cell data. This is where <strong>dimensionality reduction</strong> techniques come at play, in particular with the advent of mass and spectral cytometry. Most biological are <strong>non-linear</strong> so using algorithm based on principal component while maintaining global distribution but lose local ones. The most used algorithm is currently tSNE, which stands for t-Stochastic Neighbor Embedding. However, <strong>t-SNE</strong> is computational expensive and tented to loose global structure. That’s where <strong>UMAP</strong> veni vedi vici!</p>
-<h3 id="A-little-bit-about-t-SNE"><strong>A little bit about t-SNE</strong><a class="anchor-link" href="#A-little-bit-about-t-SNE"> </a></h3><p>Let’s start by explaining briefly how t-SNE works in made-for-biologist terms:<br />
-Developped by <a href="https://lvdmaaten.github.io/tsne/">L.J.P. van der Maaten</a>,  the algorithm aims is to minimise the Kullback-Leibler (KL) divergence, a measure of how one probability distribution diverges from a second, between the joint probabilities of the low-dimensional embedding and the high-dimensional data.</p>
+<p>Flow cytometry is a powerful technique for phenotypic analysis of cells and cell populations. One main challenge in flow cytometry analysis is to visualise the resulting high-dimensional data to understand data at single-cell levels. This is where <strong>dimensionality reduction</strong> techniques come at play, in particular with the advent of spectral and mass cytometry. Most biological data are <strong>non-linear</strong> so using algorithms based on principal component that maintain global distribution will lose local ones. The most used embedding algorithm is currently <strong>t-SNE</strong>, which stands for t-Stochastic Neighbor Embedding. I will try to expose here why UMAP killed t-SNE as nicely put in this <a href="https://towardsdatascience.com/how-exactly-umap-works-13e3040e1668">article</a>.</p>
+<h2 id="A-little-bit-about-t-SNE-before-killing-it">A little bit about t-SNE before killing it<a class="anchor-link" href="#A-little-bit-about-t-SNE-before-killing-it"> </a></h2><p>Let’s start by explaining briefly how t-SNE works:<br />
+Developped by <a href="https://lvdmaaten.github.io/tsne/">L.J.P. van der Maaten</a>,  the algorithm aims is to minimise the Kullback-Leibler (KL) divergence, a measure of how one probability distribution diverges from a second, between the low-dimensional embedding and the high-dimensional data.</p>
 
 </div>
 </div>
@@ -214,17 +214,18 @@ Developped by <a href="https://lvdmaaten.github.io/tsne/">L.J.P. van der Maaten<
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<ol>
+<h3 id="Steps">Steps<a class="anchor-link" href="#Steps"> </a></h3><ol>
 <li>t-SNE tries to determine the probability of similarity/affinity between each data points. To do so, t-SNE:</li>
 </ol>
 <ul>
 <li>measures the (‘Euclidean’) distance between one point to all the other points, pairwise.</li>
 <li>computes a similarity score using a Gaussian distribution kernel: the probability a point x would have another point as neighbour if this neighbour was picked from a normal distribution centred on the point x.</li>
 <li>these similarity scores are then normalised to account for cluster density.
-The expected density around each point that determine the width of the kernel is controlled by the perplexity parameters and to account for unbalanced density, the similarity are symmetrised by averaging them. This gives you a matrix for a similarity score of the high-dimensional data.</li>
+The expected density around each point that determines the width of the kernel is controlled by the perplexity parameters. To account for unbalanced density and thus disagreeing scores between two points, the similarity are symmetrised by averaging them. This gives you a matrix of similarity scores for the high-dimensional data.</li>
 </ul>
 <ol>
-<li><p>Following dimension reduction initialisation with PCA or at random, this process is performed again but this time to avoid overcrowding clusters t-distribution and not a Gaussian is used leaving heavy tails for far apart values.</p>
+<li><p>Following dimension reduction initialisation with PCA or at random, the data are embedded in low dimension. The process describe above is performed again but this time to avoid overcrowding clusters (all data points ending up in the same area) a t-distribution and not a Gaussian is used leaving heavy tails for far apart values.
+[image tdistriution]</p>
 </li>
 <li><p>The KL divergence cost function is minimised by gradient descent, i.e. by small steps.
 The use of KL diverge prevent t-SNE from conserving global distance in low-dimension.</p>
